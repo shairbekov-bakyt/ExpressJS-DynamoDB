@@ -1,4 +1,5 @@
 const AWS = require("aws-sdk")
+const {param} = require("express/lib/router");
 require("dotenv").config()
 
 AWS.config.update({
@@ -15,6 +16,44 @@ const getUsers = async () => {
         TableName: tableName
     };
     const users = await dynamoClient.scan(params).promise();
-    console.log(users)
     return users
 };
+
+const addOrUpdateUser = async (userItem) => {
+    const params = {
+        TableName: tableName,
+        Item: userItem
+    };
+    const user = await dynamoClient.put(params).promise();
+    return user
+}
+
+
+const getUserById = async (id) => {
+    const params = {
+        TableName: tableName,
+        Key: {
+            id,
+        }
+    }
+    const userById = await dynamoClient.get(params).promise();
+    return userById;
+}
+
+const deleteUserById = async (id) => {
+    const params = {
+        TableName: tableName,
+        Key: {
+            id,
+        }
+    }
+    return await dynamoClient.delete(params).promise();
+}
+
+module.exports = {
+    dynamoClient,
+    getUsers,
+    getUserById,
+    deleteUserById,
+    addOrUpdateUser
+}
