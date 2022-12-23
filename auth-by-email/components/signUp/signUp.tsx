@@ -8,6 +8,7 @@ import axios from "axios";
 export const SignUp = () => {
     const [isVisible, setIsVisible] = useState(false);
     const [active, setActive] = useState(false);
+    const [password, setPassword] = useState(false);
     const [isValidateOnChange, setIsValidateOnChange] = useState(false);
     const sendData = (username: string, password: string) => {
         axios.post('http://ec2-44-202-244-46.compute-1.amazonaws.com/api/v1/users/signUp', {email: username, password})
@@ -68,7 +69,29 @@ export const SignUp = () => {
                     </div>
                     <S.Div>
                         <S.Input isError={Boolean(formik.errors.password)}
-                                 type={isVisible ? "text" : "password"}  {...formik.getFieldProps("password")}/>
+                                 type={isVisible ? "text" : "password"}  {...formik.getFieldProps("password")}
+                                 onFocus={() => {
+                                     setPassword(true);
+                                 }}
+                                 onBlur={() => {
+                                     setPassword(false);
+                                 }
+                                 }/>
+                        <div style={{
+                            pointerEvents: "none",
+                            transform: `
+        translateY(${password ? "-44px" : formik.values.password ? "-44px" : "-26px"})
+        translateX(${password ? "8px" : formik.values.password ? "8px" : "15px"})`,
+                            transition: "transform 150ms cubic-bezier(0.4,0,0.2,1),opacity 150ms cubic-bezier(0.4,0,0.2,1)",
+                            backgroundColor: `${formik.values.password ? "none" : "white"}`,
+                            padding: "0 5px",
+                            width: "fit-content",
+                            zIndex: 2,
+                            fontSize: `${password ? "13px" : formik.values.password ? "13px" : "15px"}`,
+                            color: `${password ? "blue" : "gray"}`,
+                        }}>
+                            password
+                        </div>
                         <S.ErrorLabel>{formik.errors.password}</S.ErrorLabel>
                         <S.Button
                             type="button"
@@ -92,7 +115,7 @@ export const SignUp = () => {
                             d="M504 256C504 119 393 8 256 8S8 119 8 256c0 123.78 90.69 226.38 209.25 245V327.69h-63V256h63v-54.64c0-62.15 37-96.48 93.67-96.48 27.14 0 55.52 4.84 55.52 4.84v61h-31.28c-30.8 0-40.41 19.12-40.41 38.73V256h68.78l-11 71.69h-57.78V501C413.31 482.38 504 379.78 504 256z"/>
                     </S.Svg>
                 </div>
-                <S.SubmitButton type="submit">Signin</S.SubmitButton>
+                <S.SubmitButton type="submit">SignUp</S.SubmitButton>
             </S.Form>
         </S.Content>
     );

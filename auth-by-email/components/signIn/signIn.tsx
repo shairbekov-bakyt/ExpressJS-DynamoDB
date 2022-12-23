@@ -9,6 +9,7 @@ import axios from "axios";
 export const SignIn = (props: { isAuth: boolean, setIsAuth: any }) => {
     const [isVisible, setIsVisible] = useState(false);
     const [active, setActive] = useState(false);
+    const [password, setPassword] = useState(false)
     const [isValidateOnChange, setIsValidateOnChange] = useState(false);
     const toggleIsVisible = () => setIsVisible(prev => !prev);
     const setLocalStorage = (email: string, accessToken: string, refreshToken: string) => {
@@ -83,7 +84,29 @@ export const SignIn = (props: { isAuth: boolean, setIsAuth: any }) => {
                     </div>
                     <S.Div>
                         <S.Input isError={Boolean(formik.errors.password)}
-                                 type={isVisible ? "text" : "password"}  {...formik.getFieldProps("password")}/>
+                                 type={isVisible ? "text" : "password"}  {...formik.getFieldProps("password")}
+                                 onFocus={() => {
+                                     setPassword(true);
+                                 }}
+                                 onBlur={() => {
+                                     setPassword(false);
+                                 }
+                                 }/>
+                        <div style={{
+                            pointerEvents: "none",
+                            transform: `
+        translateY(${password ? "-44px" : formik.values.password ? "-44px" : "-26px"})
+        translateX(${password ? "8px" : formik.values.password ? "8px" : "15px"})`,
+                            transition: "transform 150ms cubic-bezier(0.4,0,0.2,1),opacity 150ms cubic-bezier(0.4,0,0.2,1)",
+                            backgroundColor: `${formik.values.password ? "none" : "white"}`,
+                            padding: "0 5px",
+                            width: "fit-content",
+                            zIndex: 2,
+                            fontSize: `${password ? "13px" : formik.values.password ? "13px" : "15px"}`,
+                            color: `${password ? "blue" : "gray"}`,
+                        }}>
+                            password
+                        </div>
                         <S.ErrorLabel>{formik.errors.password}</S.ErrorLabel>
                         <S.Button
                             type="button"
