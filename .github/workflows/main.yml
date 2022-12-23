@@ -1,0 +1,28 @@
+name: CI-CD
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    env:
+      SSH_PRIVATE_KEY: ${{ secrets.EC2_SSH_KEY }}
+      REMOTE_HOST: ${{ secrets.HOST_DNS }}
+      REMOTE_USER: ${{ secrets.USERNAME }}
+      TARGET: ${{ secrets.TARGET_DIR }}
+
+    steps:
+      - uses: actions/checkout@v3
+      - uses: easingthemes/ssh-deploy@main
+      - uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.HOST_DNS }}
+          username: ${{ secrets.USERNAME }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+
+          script: |
+            cd ${{ secrets.TARGET_DIR }}
+            sudo docker-compose build
+            sudo docker-compose up -d
