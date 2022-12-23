@@ -1,5 +1,6 @@
 const AWS = require("aws-sdk")
 const {param} = require("express/lib/router");
+const crypto = require('crypto');
 require("dotenv").config()
 
 AWS.config.update({
@@ -8,7 +9,7 @@ AWS.config.update({
     secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY_ID
 });
 
-const tableName = "User";
+const tableName = process.env.TABLENAME;
 const dynamoClient = new AWS.DynamoDB.DocumentClient();
 
 const getUsers = async () => {
@@ -20,12 +21,13 @@ const getUsers = async () => {
 };
 
 const addOrUpdateUser = async (userItem) => {
+    const item = {...userItem, id: crypto.createHash('md5').update(userItem.toString()).digest('hex')}
     const params = {
         TableName: tableName,
-        Item: userItem
+        Item: item
     };
     const user = await dynamoClient.put(params).promise();
-    return user
+    return item
 }
 
 

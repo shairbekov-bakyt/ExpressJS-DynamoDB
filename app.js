@@ -6,20 +6,23 @@ const {
 } = require('./dynamo');
 const express = require('express')
 const bodyParser = require('body-parser')
-const {response} = require("express");
+const {validateAuth, signUp, signIn} = require('./auth.js')
+const cors = require('cors')
+
 const app = express()
 const port = 3000
 
-app.use(bodyParser());
+app.use(bodyParser(), cors());
 app.get('/', (req, res) => {
     res.send('Hello World!').status(200)
 })
 
-app.get('/api/v1/users', async (request, response) => {
+app.get('/api/v1/users', validateAuth, async (request, response) => {
     try {
         const users = await getUsers()
         response.send(users).status(200)
     } catch (err) {
+        console.log(err)
         response.send({errorMessage: 'Something went wrong'}).status(500)
     }
 
@@ -46,15 +49,47 @@ app.delete('/api/v1/users/:id', async (request, response) => {
     }
 })
 
-app.post('/api/v1/users', async (request, response) => {
+app.post('/api/v1/users', validateAuth, async (request, response) => {
     const user = request.body;
     try {
         const newUser = await addOrUpdateUser(user);
         response.json(newUser).status(200);
     } catch (err) {
+        console.log(err)
         response.status(500).send({errorMessage: 'Something went wrong'});
     }
 });
+
+app.post('/api/v1/users/signUp', async (request, response) => {
+    const user = request.body
+    try {
+        const {email, password} = user
+        if (!email && !password) {
+            response.send({message: "password or email invalid", status: 400})
+        }
+        const newUser = await addOrUpdateUser(user)
+        const registeredUser = await signUp(email, password)
+        response.send(registeredUser)
+    } catch (error) {
+        response.send(error)
+    }
+})
+
+app.post('/api/v1/users/signIn', async (request, response) => {
+    const user = request.body
+    try {
+        const {email, password} = user
+        if (!email && !password) {
+            response.send({message: "password or email invalid", status: 400})
+        }
+        const signinedUser = await signIn(email, password)
+        response.send(signinedUser)
+    } catch (error) {
+        response.send(error)
+    }
+})
+
+
 
 app.put('/api/v1/users/:id', async (request, response) => {
     const user = request.body;
