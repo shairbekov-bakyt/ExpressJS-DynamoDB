@@ -1,11 +1,12 @@
 import React, {useState, useContext} from "react";
 import {useFormik} from 'formik';
 import {validationSchema} from "./validate";
+import {BASE_URL} from "../../next.config";
 import * as S from "./styles";
 import axios from "axios";
 
 
-export const SignIn = (props: {isAuth: boolean, setIsAuth: any}) => {
+export const SignIn = (props: { isAuth: boolean, setIsAuth: any }) => {
     const [isVisible, setIsVisible] = useState(false);
     const [active, setActive] = useState(false);
     const [isValidateOnChange, setIsValidateOnChange] = useState(false);
@@ -20,7 +21,11 @@ export const SignIn = (props: {isAuth: boolean, setIsAuth: any}) => {
         axios.post('http://ec2-44-202-244-46.compute-1.amazonaws.com/api/v1/users/signIn', {email, password})
             .then((response) => {
                 const {email, accessToken, refreshToken} = response.data
-                setLocalStorage(email, accessToken, refreshToken)
+                if (email && accessToken && refreshToken) {
+                    setLocalStorage(email, accessToken, refreshToken)
+                } else {
+                    alert(response.data.name)
+                }
             })
             .catch((err) => console.log(err))
     }
@@ -61,7 +66,9 @@ export const SignIn = (props: {isAuth: boolean, setIsAuth: any}) => {
                         />
                         <div style={{
                             pointerEvents: "none",
-                            transform: `translateY(${active ? "-44px" : formik.values.email ? "-44px" : "-26px"}) translateX(${active ? "8px" : formik.values.email ? "8px" : "15px"})`,
+                            transform: `
+        translateY(${active ? "-44px" : formik.values.email ? "-44px" : "-26px"})
+        translateX(${active ? "8px" : formik.values.email ? "8px" : "15px"})`,
                             transition: "transform 150ms cubic-bezier(0.4,0,0.2,1),opacity 150ms cubic-bezier(0.4,0,0.2,1)",
                             backgroundColor: `${formik.values.email ? "none" : "white"}`,
                             padding: "0 5px",
