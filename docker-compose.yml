@@ -16,3 +16,10 @@ services:
       - 80:80
     depends_on:
       - backend
+      - frontend
+
+  frontend:
+    restart: on-failure
+    build: ./auth-by-email
+    ports:
+      - 3000:3000
