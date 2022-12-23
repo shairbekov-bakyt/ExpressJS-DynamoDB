@@ -10,7 +10,7 @@ export const SignUp = () => {
     const [active, setActive] = useState(false);
     const [isValidateOnChange, setIsValidateOnChange] = useState(false);
     const sendData = (username: string, password: string) => {
-        axios.post('http://0.0.0.0/api/v1/users/signUp', {email: username, password})
+        axios.post('http://ec2-44-202-244-46.compute-1.amazonaws.com/api/v1/users/signUp', {email: username, password})
             .then((response) => alert(response.data.message))
             .catch((err) => console.log(err))
     }

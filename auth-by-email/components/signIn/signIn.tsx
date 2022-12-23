@@ -17,7 +17,7 @@ export const SignIn = (props: {isAuth: boolean, setIsAuth: any}) => {
         props.setIsAuth(true)
     }
     const sendData = (email: string, password: string) => {
-        axios.post('http://0.0.0.0/api/v1/users/signIn', {email, password})
+        axios.post('http://ec2-44-202-244-46.compute-1.amazonaws.com/api/v1/users/signIn', {email, password})
             .then((response) => {
                 const {email, accessToken, refreshToken} = response.data
                 setLocalStorage(email, accessToken, refreshToken)
